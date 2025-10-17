@@ -292,4 +292,8 @@ Some content without placeholder`;
 
       const result = (readmeUpdater as any).insertDemoContent(content);
 
-      expect(result).toContain('
+      expect(result).toContain('```mermaid');
+      expect(result).toContain('graph LR');
+    });
+  });
+});

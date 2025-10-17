@@ -6,13 +6,12 @@
     "composite": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ],
   "exclude": [
     "node_modules",
     "dist",
-    "src/**/__tests__/**",
-    "src/**/*.test.ts",
-    "src/**/*.spec.ts"
+    "src/**/__tests__"
   ]
 }

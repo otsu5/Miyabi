@@ -34,17 +34,14 @@
     "scripts/**/*",
     "utils/**/*",
     "tests/**/*",
-    "vitest.config.ts"
+    "packages/**/*",
+    "api/**/*",
+    "vitest.config.ts",
+    "playwright.config.ts"
   ],
   "exclude": [
     "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "**/*.spec.ts",
-    "**/__tests__/**",
-    "**/*.d.ts",
-    "**/*.js",
-    "**/*.js.map"
+    "dist"
   ],
   "references": [
     { "path": "./packages/coding-agents" },

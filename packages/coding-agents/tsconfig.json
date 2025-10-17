@@ -9,16 +9,12 @@
     "sourceMap": true
   },
   "include": [
-    "**/*.ts"
+    "**/*.ts",
+    "**/*.tsx"
   ],
   "exclude": [
     "node_modules",
-    "dist",
-    "**/*.test.ts",
-    "tests/**/*",
-    "benchmark/**/*",
-    "demo/**/*",
-    "examples/**/*"
+    "dist"
   ],
   "references": [
     {

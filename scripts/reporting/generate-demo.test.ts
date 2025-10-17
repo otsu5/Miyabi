@@ -283,4 +283,8 @@ describe('DemoGenerator', () => {
       await (demoGenerator as any).generateArchitectureDiagram();
 
       const diagramContent = mockedFs.writeFileSync.mock.calls[0][1] as string;
-      expect(diagramContent).toContain('
+      expect(diagramContent).toContain('```mermaid');
+      expect(diagramContent).toContain('graph TD');
+    });
+  });
+});
