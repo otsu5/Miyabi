@@ -12,6 +12,16 @@ const redis = process.env.REDIS_URL
   ? new Redis(process.env.REDIS_URL)
   : null;
 
+const withRedisStore = (prefix: string) =>
+  redis
+    ? {
+        store: new RedisStore({
+          client: redis,
+          prefix
+        } as any)
+      }
+    : {};
+
 /**
  * General API rate limiter
  * 100 requests per 15 minutes
@@ -26,12 +36,7 @@ export const apiLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  ...(redis && {
-    store: new RedisStore({
-      client: redis,
-      prefix: 'rate_limit:api:'
-    })
-  })
+  ...withRedisStore('rate_limit:api:')
 });
 
 /**
@@ -48,12 +53,7 @@ export const purchaseLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  ...(redis && {
-    store: new RedisStore({
-      client: redis,
-      prefix: 'rate_limit:purchase:'
-    })
-  })
+  ...withRedisStore('rate_limit:purchase:')
 });
 
 /**
@@ -70,12 +70,7 @@ export const verifyLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  ...(redis && {
-    store: new RedisStore({
-      client: redis,
-      prefix: 'rate_limit:verify:'
-    })
-  })
+  ...withRedisStore('rate_limit:verify:')
 });
 
 /**
@@ -92,12 +87,7 @@ export const usageLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  ...(redis && {
-    store: new RedisStore({
-      client: redis,
-      prefix: 'rate_limit:usage:'
-    })
-  })
+  ...withRedisStore('rate_limit:usage:')
 });
 
 /**
@@ -114,10 +104,5 @@ export const submissionLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  ...(redis && {
-    store: new RedisStore({
-      client: redis,
-      prefix: 'rate_limit:submission:'
-    })
-  })
+  ...withRedisStore('rate_limit:submission:')
 });

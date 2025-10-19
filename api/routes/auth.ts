@@ -84,12 +84,14 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
     };
 
     res.json(response);
+    return;
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({
       error: 'internal_error',
       message: 'An error occurred during login',
     });
+    return;
   }
 });
 
@@ -165,12 +167,14 @@ router.post('/refresh', async (req: Request, res: Response): Promise<void> => {
     };
 
     res.json(response);
+    return;
   } catch (error) {
     console.error('Token refresh error:', error);
     res.status(500).json({
       error: 'internal_error',
       message: 'An error occurred during token refresh',
     });
+    return;
   }
 });
 
@@ -178,7 +182,7 @@ router.post('/refresh', async (req: Request, res: Response): Promise<void> => {
  * POST /v1/auth/logout
  * Logout (client-side token removal)
  */
-router.post('/logout', requireAuth, async (req: AuthRequest, res: Response): Promise<void> => {
+router.post('/logout', requireAuth, async (_req: AuthRequest, res: Response): Promise<void> => {
   // In a stateless JWT system, logout is primarily client-side
   // The client should remove the tokens from storage
   // In production, you might want to implement token blacklisting
@@ -186,6 +190,7 @@ router.post('/logout', requireAuth, async (req: AuthRequest, res: Response): Pro
   res.json({
     message: 'Logged out successfully',
   });
+  return;
 });
 
 /**
@@ -219,12 +224,14 @@ router.get('/me', requireAuth, async (req: AuthRequest, res: Response): Promise<
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     });
+    return;
   } catch (error) {
     console.error('Get user error:', error);
     res.status(500).json({
       error: 'internal_error',
       message: 'An error occurred while fetching user information',
     });
+    return;
   }
 });
 

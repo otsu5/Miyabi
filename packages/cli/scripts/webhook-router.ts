@@ -398,4 +398,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   });
 }
 
-export { WebhookEventRouter, EventPayload, RoutingRule };
+export { WebhookEventRouter };
+export type { EventPayload, RoutingRule };

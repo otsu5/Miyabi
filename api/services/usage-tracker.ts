@@ -4,7 +4,7 @@
  */
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { LicensePayload, UsageEvent, UsageAggregate, QuotaCheckResult } from '../lib/types';
+import { LicensePayload, QuotaCheckResult } from '../lib/types';
 
 export class UsageTracker {
   private supabase: SupabaseClient;

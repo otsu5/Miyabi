@@ -20,6 +20,7 @@ describe('/review Command E2E', () => {
     config = {
       deviceIdentifier: 'e2e-test',
       githubToken: process.env.GITHUB_TOKEN || 'test-token',
+      anthropicApiKey: process.env.ANTHROPIC_API_KEY || 'test-key',
       useTaskTool: false,
       useWorktree: false,
       logDirectory: './logs/e2e',
@@ -223,7 +224,7 @@ describe('/review Command E2E', () => {
 
         if (report.recommendations.length > 0) {
           console.log('\n💡 Recommendations:');
-          report.recommendations.forEach((rec, index) => {
+          report.recommendations.forEach((rec: string, index: number) => {
             console.log(`   ${index + 1}. ${rec}`);
           });
         } else {

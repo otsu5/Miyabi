@@ -284,4 +284,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   });
 }
 
-export { generateMetrics, DashboardData };
+export { generateMetrics };
+export type { DashboardData };

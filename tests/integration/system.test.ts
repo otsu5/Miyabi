@@ -154,13 +154,13 @@ describe('Agentic OS - System Integration', () => {
 
     test('should find best worker for task', () => {
       // Register multiple workers
-      const worker1 = workerRegistry.register({
+      workerRegistry.register({
         name: 'SpecialistAgent',
         type: 'ai_agent',
         skills: ['typescript', 'testing', 'documentation'],
       });
 
-      const worker2 = workerRegistry.register({
+      workerRegistry.register({
         name: 'GeneralistAgent',
         type: 'ai_agent',
         skills: ['typescript'],

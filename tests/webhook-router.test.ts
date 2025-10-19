@@ -8,8 +8,8 @@
  * - Rate limiting
  */
 
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { verifyWebhookSignature, validateTimestamp, performSecurityCheck } from '../scripts/webhook-security';
+import { describe, it, expect } from 'vitest';
+import { verifyWebhookSignature, validateTimestamp, performSecurityCheck } from '../packages/cli/scripts/webhook-security';
 import { createHmac } from 'crypto';
 
 // ============================================================================

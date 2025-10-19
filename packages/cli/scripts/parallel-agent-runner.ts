@@ -180,6 +180,7 @@ export class ParallelAgentRunner {
       'PRAgent': ['pr-management', 'git', 'collaboration'],
       'DeploymentAgent': ['deployment', 'devops', 'monitoring'],
       'AutoFixAgent': ['debugging', 'fixing', 'testing'],
+      'WaterSpiderAgent': ['context-switching', 'bridging', 'resource-management'],
     };
 
     return skillMap[agentType] || [];

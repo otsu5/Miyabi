@@ -84,7 +84,7 @@ describe('CoordinatorAgent', () => {
       ];
 
       // Use DAGManager (buildDAG moved to utility class)
-      const { DAGManager } = await import('@miyabi/coding-agents/utils/dag-manager.js');
+      const { DAGManager } = await import('@miyabi/coding-agents/utils/dag-manager');
       const dag = DAGManager.buildDAG(tasks);
 
       expect(dag.nodes.length).toBe(2);
@@ -123,7 +123,7 @@ describe('CoordinatorAgent', () => {
       ];
 
       // Use DAGManager (buildDAG and detectCycles moved to utility class)
-      const { DAGManager } = await import('@miyabi/coding-agents/utils/dag-manager.js');
+      const { DAGManager } = await import('@miyabi/coding-agents/utils/dag-manager');
       const dag = DAGManager.buildDAG(tasks);
       const hasCycles = DAGManager.detectCycles(dag);
 
@@ -189,7 +189,7 @@ describe('CoordinatorAgent', () => {
       ];
 
       // Use DAGManager
-      const { DAGManager } = await import('@miyabi/coding-agents/utils/dag-manager.js');
+      const { DAGManager } = await import('@miyabi/coding-agents/utils/dag-manager');
       const dag = DAGManager.buildDAG(tasks);
 
       // Test execution plan structure
@@ -251,7 +251,7 @@ describe('CoordinatorAgent', () => {
       const decomposition = await agent.decomposeIssue(issue);
 
       // Import PlansGenerator
-      const { PlansGenerator } = await import('@miyabi/coding-agents/utils/plans-generator.js');
+      const { PlansGenerator } = await import('@miyabi/coding-agents/utils/plans-generator');
 
       // Generate Plans.md markdown
       const plansContent = PlansGenerator.generateInitialPlan(decomposition);
@@ -295,7 +295,7 @@ describe('CoordinatorAgent', () => {
 
       const decomposition = await agent.decomposeIssue(issue);
 
-      const { PlansGenerator } = await import('@miyabi/coding-agents/utils/plans-generator.js');
+      const { PlansGenerator } = await import('@miyabi/coding-agents/utils/plans-generator');
       const plansContent = PlansGenerator.generateInitialPlan(decomposition);
 
       // Check task formatting
@@ -334,7 +334,7 @@ describe('CoordinatorAgent', () => {
 
       const decomposition = await agent.decomposeIssue(issue);
 
-      const { PlansGenerator } = await import('@miyabi/coding-agents/utils/plans-generator.js');
+      const { PlansGenerator } = await import('@miyabi/coding-agents/utils/plans-generator');
       const plansContent = PlansGenerator.generateInitialPlan(decomposition);
 
       // Check level headers exist
@@ -365,7 +365,7 @@ describe('CoordinatorAgent', () => {
 
       const decomposition = await agent.decomposeIssue(issue);
 
-      const { PlansGenerator } = await import('@miyabi/coding-agents/utils/plans-generator.js');
+      const { PlansGenerator } = await import('@miyabi/coding-agents/utils/plans-generator');
       const plansContent = PlansGenerator.generateInitialPlan(decomposition);
 
       // Check recommendations section exists

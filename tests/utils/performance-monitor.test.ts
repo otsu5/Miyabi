@@ -4,7 +4,7 @@
  * Tests for performance metrics collection and monitoring
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { PerformanceMonitor } from '../../utils/performance-monitor';
 
 describe('PerformanceMonitor', () => {

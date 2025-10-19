@@ -16,6 +16,7 @@ describe('ReviewAgent - Snapshot Tests', () => {
     config = {
       deviceIdentifier: 'test-device',
       githubToken: 'test-token',
+      anthropicApiKey: 'test-key',
       useTaskTool: false,
       useWorktree: false,
       logDirectory: './logs/test',

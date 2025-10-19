@@ -5,9 +5,8 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ReviewLoop, ReviewLoopOptions } from '@miyabi/coding-agents/review/review-loop';
-import { ReviewAgent } from '@miyabi/coding-agents/review/review-agent';
-import { AgentConfig, QualityReport, QualityIssue } from '@miyabi/coding-agents/types/index';
+import { ReviewLoop } from '@miyabi/coding-agents/review/review-loop';
+import { AgentConfig } from '@miyabi/coding-agents/types/index';
 
 describe('ReviewLoop - E2E Tests', () => {
   let config: AgentConfig;

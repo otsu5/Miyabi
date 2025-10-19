@@ -8,7 +8,6 @@ import { createClient } from '@supabase/supabase-js';
 import { requireAuth, optionalAuth, AuthRequest } from '../middleware/auth';
 import { apiLimiter, purchaseLimiter } from '../middleware/rate-limit';
 import { LicenseManager } from '../services/license-manager';
-import { Plugin, PaginationParams } from '../lib/types';
 
 const router = Router();
 const supabase = createClient(
@@ -73,7 +72,7 @@ router.get(
         throw error;
       }
 
-      res.json({
+      return res.json({
         plugins: plugins || [],
         pagination: {
           page: pageNum,
@@ -84,7 +83,7 @@ router.get(
       });
     } catch (error) {
       console.error('Error listing plugins:', error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'internal_error',
         message: 'Failed to list plugins'
       });
@@ -123,13 +122,13 @@ router.get(
         .select('*', { count: 'exact', head: true })
         .eq('plugin_id', pluginId);
 
-      res.json({
+      return res.json({
         ...plugin,
         reviewCount: reviewCount || 0
       });
     } catch (error) {
       console.error('Error fetching plugin:', error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'internal_error',
         message: 'Failed to fetch plugin'
       });
@@ -215,7 +214,7 @@ router.post(
         p_plugin_id: pluginId
       });
 
-      res.json({
+      return res.json({
         success: true,
         plugin_id: pluginId,
         tier: 'free',
@@ -224,7 +223,7 @@ router.post(
       });
     } catch (error) {
       console.error('Error installing plugin:', error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'internal_error',
         message: 'Failed to install plugin'
       });
@@ -243,7 +242,7 @@ router.post(
   async (req: AuthRequest, res) => {
     try {
       const { pluginId } = req.params;
-      const { payment_method_id, billing_cycle = 'monthly' } = req.body;
+      // payment_method_id / billing_cycle will be used once Stripe integration is implemented
       const userId = req.user!.id;
 
       // Get plugin details
@@ -286,7 +285,7 @@ router.post(
       // TODO: Implement Stripe subscription creation
       // This is a placeholder - full Stripe integration needed
 
-      res.json({
+      return res.json({
         success: true,
         message: 'Stripe integration required - see MARKETPLACE_IMPLEMENTATION_GUIDE.md',
         plugin_id: pluginId,
@@ -295,7 +294,7 @@ router.post(
       });
     } catch (error) {
       console.error('Error purchasing plugin:', error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'internal_error',
         message: 'Failed to purchase plugin'
       });
@@ -368,7 +367,7 @@ router.post(
         cancel_at_period_end: false
       });
 
-      res.json({
+      return res.json({
         success: true,
         plugin_id: pluginId,
         tier: plugin.tier,
@@ -381,7 +380,7 @@ router.post(
       });
     } catch (error: any) {
       console.error('Error starting trial:', error);
-      res.status(400).json({
+      return res.status(400).json({
         error: 'bad_request',
         message: error.message || 'Failed to start trial'
       });
@@ -420,12 +419,12 @@ router.get(
         throw error;
       }
 
-      res.json({
+      return res.json({
         subscriptions: subscriptions || []
       });
     } catch (error) {
       console.error('Error fetching subscriptions:', error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'internal_error',
         message: 'Failed to fetch subscriptions'
       });
@@ -473,7 +472,7 @@ router.delete(
           })
           .eq('id', subscriptionId);
 
-        res.json({
+        return res.json({
           success: true,
           subscription_id: subscriptionId,
           status: 'canceled',
@@ -490,7 +489,7 @@ router.delete(
           })
           .eq('id', subscriptionId);
 
-        res.json({
+        return res.json({
           success: true,
           subscription_id: subscriptionId,
           status: 'active',
@@ -501,7 +500,7 @@ router.delete(
       }
     } catch (error) {
       console.error('Error canceling subscription:', error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'internal_error',
         message: 'Failed to cancel subscription'
       });

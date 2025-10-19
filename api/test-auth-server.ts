@@ -18,7 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
@@ -26,7 +26,7 @@ app.get('/health', (req, res) => {
 app.use('/v1/auth', authRoutes);
 
 // Root
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.json({
     name: 'Miyabi Auth Test API',
     version: '1.0.0',

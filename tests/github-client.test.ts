@@ -41,7 +41,7 @@ vi.mock('child_process', () => {
 });
 
 // Import after mocks are set up
-const { GitHubClient } = await import('@miyabi/coding-agents/utils/github-client.js');
+const { GitHubClient } = await import('@miyabi/coding-agents/utils/github-client');
 
 describe('GitHubClient', () => {
   let githubClient: InstanceType<typeof GitHubClient>;

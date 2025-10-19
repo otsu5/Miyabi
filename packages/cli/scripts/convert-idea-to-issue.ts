@@ -340,4 +340,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   });
 }
 
-export { IdeaToIssueConverter, Discussion, IssueTemplate };
+export { IdeaToIssueConverter };
+export type { Discussion, IssueTemplate };

@@ -36,7 +36,7 @@ router.post('/verify', verifyLimiter, async (req, res) => {
       });
     }
 
-    res.json({
+    return res.json({
       valid: true,
       plugin_id: license.plugin_id,
       tier: license.tier,
@@ -46,7 +46,7 @@ router.post('/verify', verifyLimiter, async (req, res) => {
     });
   } catch (error) {
     console.error('Error verifying license:', error);
-    res.status(500).json({
+    return res.status(500).json({
       error: 'internal_error',
       message: 'Failed to verify license'
     });
@@ -76,7 +76,7 @@ router.post(
 
       await licenseManager.revokeLicense(licenseKey, reason);
 
-      res.json({
+      return res.json({
         success: true,
         license_key: licenseKey,
         revoked_at: new Date().toISOString(),
@@ -84,7 +84,7 @@ router.post(
       });
     } catch (error) {
       console.error('Error revoking license:', error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'internal_error',
         message: 'Failed to revoke license'
       });

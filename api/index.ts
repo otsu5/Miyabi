@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: true })); // URL-encoded body parser
 app.use(morgan('combined')); // Request logging
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({
     status: 'ok',
     version: '1.0.0',
@@ -45,7 +45,7 @@ app.use('/v1/licenses', licenseRoutes);
 app.use('/v1/usage', usageRoutes);
 
 // Root endpoint
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.json({
     name: 'Miyabi Marketplace API',
     version: '1.0.0',
@@ -69,7 +69,7 @@ app.use((req, res) => {
 });
 
 // Error handler
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
   console.error('Unhandled error:', err);
 
   res.status(500).json({

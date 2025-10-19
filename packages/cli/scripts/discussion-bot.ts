@@ -528,4 +528,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   });
 }
 
-export { DiscussionBot, Discussion, DiscussionAnalysis, BotConfig, FAQ_DATABASE };
+export { DiscussionBot, FAQ_DATABASE };
+export type { Discussion, DiscussionAnalysis, BotConfig };

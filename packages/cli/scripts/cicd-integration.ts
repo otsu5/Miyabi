@@ -172,8 +172,13 @@ export class CICDIntegration {
         required_contexts: [],
       });
 
-      console.log(`[CICDIntegration] Created deployment: ${data.id}`);
-      return data.id;
+      if ('id' in data && typeof data.id === 'number') {
+        console.log(`[CICDIntegration] Created deployment: ${data.id}`);
+        return data.id;
+      }
+
+      console.error('[CICDIntegration] Unexpected response creating deployment:', data);
+      return null;
     } catch (error) {
       console.error('[CICDIntegration] Failed to create deployment:', error);
       return null;

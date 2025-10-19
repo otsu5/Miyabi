@@ -76,7 +76,7 @@ router.get(
 
       const { monthly_issues, claude_api_tokens } = license.limitations;
 
-      res.json({
+      return res.json({
         plugin_id,
         period: targetPeriod,
         usage: {
@@ -95,7 +95,7 @@ router.get(
       });
     } catch (error) {
       console.error('Error fetching usage stats:', error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'internal_error',
         message: 'Failed to fetch usage statistics'
       });
@@ -172,14 +172,14 @@ router.post(
           });
       }
 
-      res.json({
+      return res.json({
         success: true,
         event_id: `evt_${Date.now()}`,
         tracked_at: new Date().toISOString()
       });
     } catch (error) {
       console.error('Error tracking usage:', error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'internal_error',
         message: 'Failed to track usage'
       });
@@ -215,14 +215,14 @@ router.get(
         targetMonth
       );
 
-      res.json({
+      return res.json({
         plugin_id,
         month: targetMonth,
         report
       });
     } catch (error) {
       console.error('Error generating usage report:', error);
-      res.status(500).json({
+      return res.status(500).json({
         error: 'internal_error',
         message: 'Failed to generate usage report'
       });
