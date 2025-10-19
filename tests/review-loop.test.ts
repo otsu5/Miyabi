@@ -6,7 +6,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ReviewLoop } from '@miyabi/coding-agents/review/review-loop';
-import { AgentConfig } from '@miyabi/coding-agents/types/index';
+import { AgentConfig, QualityIssue } from '@miyabi/coding-agents/types/index';
 
 describe('ReviewLoop - E2E Tests', () => {
   let config: AgentConfig;
@@ -16,6 +16,8 @@ describe('ReviewLoop - E2E Tests', () => {
       deviceIdentifier: 'test-device',
       githubToken: 'test-token',
       anthropicApiKey: 'test-key',
+      useTaskTool: false,
+      useWorktree: false,
       logDirectory: '.ai/logs',
       reportDirectory: '.ai/test-reports',
     };

@@ -1,27 +1,26 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, type Mock } from 'vitest';
 import * as fs from 'fs';
 import * as path from 'path';
-import { githubOAuth } from '../github-oauth';
 
 // Mock dependencies
 vi.mock('open', () => ({
   default: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock('chalk', () => ({
-  default: {
-    cyan: vi.fn((text: string) => text),
-    gray: vi.fn((text: string) => text),
-    green: vi.fn((text: string) => text),
-    yellow: vi.fn((text: string) => text),
-    white: {
-      bold: vi.fn((text: string) => text),
+vi.mock('chalk', () => {
+  const passthrough = (text: string) => text;
+  return {
+    default: {
+      cyan: passthrough,
+      gray: passthrough,
+      green: passthrough,
+      yellow: passthrough,
+      white: {
+        bold: passthrough,
+      },
     },
-    green: {
-      bold: vi.fn((text: string) => text),
-    },
-  },
-}));
+  };
+});
 
 vi.mock('@octokit/rest', () => ({
   Octokit: vi.fn().mockImplementation(() => ({
@@ -35,6 +34,7 @@ vi.mock('@octokit/rest', () => ({
 }));
 
 describe('github-oauth', () => {
+  let fetchMock: Mock;
   const mockToken = 'ghp_test123456789';
   const testEnvPath = path.join(process.cwd(), '.env.test');
 
@@ -44,7 +44,8 @@ describe('github-oauth', () => {
     delete process.env.AGENTIC_OS_CLIENT_ID;
 
     // Mock fetch for GitHub API
-    global.fetch = vi.fn();
+    fetchMock = vi.fn();
+    (globalThis as any).fetch = fetchMock;
 
     // Spy on console methods
     vi.spyOn(console, 'log').mockImplementation(() => {});
@@ -52,6 +53,7 @@ describe('github-oauth', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    delete (globalThis as any).fetch;
     // Clean up test .env file
     if (fs.existsSync(testEnvPath)) {
       fs.unlinkSync(testEnvPath);
@@ -68,7 +70,7 @@ describe('github-oauth', () => {
         interval: 5,
       };
 
-      (global.fetch as any).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => mockDeviceCode,
       });
@@ -80,7 +82,7 @@ describe('github-oauth', () => {
     });
 
     it('should handle device code request failure', async () => {
-      (global.fetch as any).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: false,
         statusText: 'Bad Request',
       });
@@ -221,7 +223,7 @@ describe('github-oauth', () => {
 
       // First call: authorization_pending
       // Second call: success with token
-      (global.fetch as any)
+      fetchMock
         .mockResolvedValueOnce({
           ok: true,
           json: async () => ({ error: 'authorization_pending' }),
@@ -252,7 +254,11 @@ describe('github-oauth', () => {
           }),
         });
 
-        const data = await response.json();
+        const data = (await response.json()) as {
+          access_token?: string;
+          error?: string;
+          error_description?: string;
+        };
         if (data.access_token) {
           token = data.access_token;
           break;
@@ -264,19 +270,19 @@ describe('github-oauth', () => {
     });
 
     it('should handle slow_down error', async () => {
-      (global.fetch as any).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => ({ error: 'slow_down' }),
       });
 
       const response = await fetch('test');
-      const data = await response.json();
+      const data = (await response.json()) as { error?: string };
 
       expect(data.error).toBe('slow_down');
     });
 
     it('should throw on OAuth error', async () => {
-      (global.fetch as any).mockResolvedValueOnce({
+      fetchMock.mockResolvedValueOnce({
         ok: true,
         json: async () => ({
           error: 'access_denied',
@@ -285,7 +291,10 @@ describe('github-oauth', () => {
       });
 
       const response = await fetch('test');
-      const data = await response.json();
+      const data = (await response.json()) as {
+        error?: string;
+        error_description?: string;
+      };
 
       expect(data.error).toBe('access_denied');
       expect(() => {

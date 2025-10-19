@@ -33,6 +33,8 @@ describe('ReviewAgent - Test Coverage Integration', () => {
       deviceIdentifier: 'test-device',
       githubToken: 'test-token',
       anthropicApiKey: 'test-key',
+      useTaskTool: false,
+      useWorktree: false,
       logDirectory: '.ai/logs',
       reportDirectory: '.ai/test-reports',
     };

@@ -186,7 +186,7 @@ export class MockSecurityManager {
     _repo: string,
   ) {}
 
-  async scanSecrets(_path: string): Promise<any[]> {
+  async scanForSecrets(_path: string): Promise<any[]> {
     return Promise.resolve(fixtures.mockSecurityScan.findings);
   }
 }

@@ -283,13 +283,13 @@ describe('GitHub OS Integration - Phase A-J', () => {
         // Mock mode: Use mock class
         const { MockSecurityManager } = await import('../mocks/github-api');
         const sm = new MockSecurityManager(GITHUB_TOKEN || 'mock', TEST_OWNER, TEST_REPO);
-        const secrets = await sm.scanSecrets('.');
+        const secrets = await sm.scanForSecrets('.');
         expect(Array.isArray(secrets)).toBe(true);
       } else {
         // Real API mode
         const { SecurityManager } = await import('../../packages/cli/scripts/security-manager');
         const sm = new SecurityManager('fake-token', TEST_OWNER, TEST_REPO);
-        const secrets = await sm.scanSecrets('.');
+        const secrets = await sm.scanForSecrets('.');
         expect(Array.isArray(secrets)).toBe(true);
       }
     });

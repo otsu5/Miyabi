@@ -37,6 +37,14 @@ vi.mock('@octokit/rest', () => ({
   Octokit: vi.fn(),
 }));
 
+const createDirent = (name: string, isDirectory: boolean): fs.Dirent =>
+  ({
+    name,
+    isDirectory: () => isDirectory,
+    isFile: () => !isDirectory,
+    isSymbolicLink: () => false,
+  } as unknown as fs.Dirent);
+
 describe('claude-config', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -188,15 +196,11 @@ describe('claude-config', () => {
       // Mock nested directory structure
       vi.mocked(fs.readdirSync)
         .mockReturnValueOnce([
-          { name: 'agents', isDirectory: () => true } as fs.Dirent,
-          { name: 'commands', isDirectory: () => true } as fs.Dirent,
+          createDirent('agents', true),
+          createDirent('commands', true),
         ])
-        .mockReturnValueOnce([
-          { name: 'agent1.md', isDirectory: () => false } as fs.Dirent,
-        ])
-        .mockReturnValueOnce([
-          { name: 'cmd1.md', isDirectory: () => false } as fs.Dirent,
-        ]);
+        .mockReturnValueOnce([createDirent('agent1.md', false)])
+        .mockReturnValueOnce([createDirent('cmd1.md', false)]);
 
       vi.mocked(fs.copyFileSync).mockReturnValue(undefined);
 
@@ -242,7 +246,7 @@ describe('claude-config', () => {
       vi.mocked(fs.mkdirSync).mockReturnValue(undefined);
       vi.mocked(fs.copyFileSync).mockReturnValue(undefined);
       vi.mocked(fs.readdirSync).mockReturnValue([
-        { name: 'file.txt', isDirectory: () => false } as fs.Dirent,
+        createDirent('file.txt', false),
       ]);
 
       await deployClaudeConfig({
@@ -302,7 +306,7 @@ describe('claude-config', () => {
       vi.mocked(fs.mkdirSync).mockReturnValue(undefined);
       vi.mocked(fs.copyFileSync).mockReturnValue(undefined);
       vi.mocked(fs.readdirSync).mockReturnValue([
-        { name: 'file.txt', isDirectory: () => false } as fs.Dirent,
+        createDirent('file.txt', false),
       ]);
 
       await deployClaudeConfig({
@@ -322,7 +326,7 @@ describe('claude-config', () => {
       vi.mocked(fs.renameSync).mockReturnValue(undefined);
       vi.mocked(fs.mkdirSync).mockReturnValue(undefined);
       vi.mocked(fs.readdirSync).mockReturnValue([
-        { name: 'file.txt', isDirectory: () => false } as fs.Dirent,
+        createDirent('file.txt', false),
       ]);
 
       const eexistError = new Error('File exists') as NodeJS.ErrnoException;
@@ -443,7 +447,7 @@ describe('claude-config', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(fs.readFileSync).mockReturnValue('Template content');
       vi.mocked(fs.readdirSync).mockReturnValue([
-        { name: 'file.md', isDirectory: () => false } as fs.Dirent,
+        createDirent('file.md', false),
       ]);
 
       await deployClaudeConfigToGitHub('owner', 'repo', 'test-project', 'ghp_1234567890123456789012345678901234567890');
@@ -461,7 +465,7 @@ describe('claude-config', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(fs.readFileSync).mockReturnValue('File content');
       vi.mocked(fs.readdirSync).mockReturnValue([
-        { name: 'file.md', isDirectory: () => false } as fs.Dirent,
+        createDirent('file.md', false),
       ]);
 
       await deployClaudeConfigToGitHub('owner', 'repo', 'test-project', 'ghp_1234567890123456789012345678901234567890');
@@ -478,7 +482,7 @@ describe('claude-config', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(fs.readFileSync).mockReturnValue('Content');
       vi.mocked(fs.readdirSync).mockReturnValue([
-        { name: 'file.md', isDirectory: () => false } as fs.Dirent,
+        createDirent('file.md', false),
       ]);
 
       await deployClaudeConfigToGitHub('owner', 'repo', 'test-project', 'ghp_1234567890123456789012345678901234567890');
@@ -508,7 +512,7 @@ describe('claude-config', () => {
         return path.toString().includes('claude-code') && !path.toString().includes('CLAUDE.md.template');
       });
       vi.mocked(fs.readdirSync).mockReturnValue([
-        { name: 'file.md', isDirectory: () => false } as fs.Dirent,
+        createDirent('file.md', false),
       ]);
       vi.mocked(fs.readFileSync).mockReturnValue('File content');
 
@@ -533,10 +537,10 @@ describe('claude-config', () => {
       // Mock nested directory structure
       vi.mocked(fs.readdirSync)
         .mockReturnValueOnce([
-          { name: 'agents', isDirectory: () => true } as fs.Dirent,
+          createDirent('agents', true),
         ])
         .mockReturnValueOnce([
-          { name: 'agent1.md', isDirectory: () => false } as fs.Dirent,
+          createDirent('agent1.md', false),
         ]);
 
       await deployClaudeConfigToGitHub('owner', 'repo', 'test-project', 'ghp_1234567890123456789012345678901234567890');
@@ -549,7 +553,7 @@ describe('claude-config', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(fs.readFileSync).mockReturnValue('Content');
       vi.mocked(fs.readdirSync).mockReturnValue([
-        { name: 'file.md', isDirectory: () => false } as fs.Dirent,
+        createDirent('file.md', false),
       ]);
 
       await deployClaudeConfigToGitHub('owner', 'repo', 'test-project', 'ghp_1234567890123456789012345678901234567890');
@@ -562,8 +566,8 @@ describe('claude-config', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(fs.readFileSync).mockReturnValue('Content');
       vi.mocked(fs.readdirSync).mockReturnValue([
-        { name: 'file1.md', isDirectory: () => false } as fs.Dirent,
-        { name: 'file2.md', isDirectory: () => false } as fs.Dirent,
+        createDirent('file1.md', false),
+        createDirent('file2.md', false),
       ]);
 
       await deployClaudeConfigToGitHub('owner', 'repo', 'test-project', 'ghp_1234567890123456789012345678901234567890');
@@ -577,7 +581,7 @@ describe('claude-config', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(fs.readFileSync).mockReturnValue('Content');
       vi.mocked(fs.readdirSync).mockReturnValue([
-        { name: 'file.md', isDirectory: () => false } as fs.Dirent,
+        createDirent('file.md', false),
       ]);
 
       await deployClaudeConfigToGitHub('owner', 'repo', 'test-project', 'ghp_1234567890123456789012345678901234567890');
@@ -603,8 +607,8 @@ describe('claude-config', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(fs.readFileSync).mockReturnValue('Content');
       vi.mocked(fs.readdirSync).mockReturnValue([
-        { name: 'file1.md', isDirectory: () => false } as fs.Dirent,
-        { name: 'file2.md', isDirectory: () => false } as fs.Dirent,
+        createDirent('file1.md', false),
+        createDirent('file2.md', false),
       ]);
 
       const mockOctokit = {
@@ -630,7 +634,7 @@ describe('claude-config', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(fs.readFileSync).mockReturnValue('Content');
       vi.mocked(fs.readdirSync).mockReturnValue([
-        { name: 'file.md', isDirectory: () => false } as fs.Dirent,
+        createDirent('file.md', false),
       ]);
 
       const mockOctokit = {
@@ -659,10 +663,10 @@ describe('claude-config', () => {
       // Mock nested structure: .claude/agents/agent.md
       vi.mocked(fs.readdirSync)
         .mockReturnValueOnce([
-          { name: 'agents', isDirectory: () => true } as fs.Dirent,
+          createDirent('agents', true),
         ])
         .mockReturnValueOnce([
-          { name: 'agent.md', isDirectory: () => false } as fs.Dirent,
+          createDirent('agent.md', false),
         ]);
 
       const mockOctokit = {
@@ -688,7 +692,7 @@ describe('claude-config', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(fs.readFileSync).mockReturnValue('UTF-8 content: 日本語');
       vi.mocked(fs.readdirSync).mockReturnValue([
-        { name: 'file.md', isDirectory: () => false } as fs.Dirent,
+        createDirent('file.md', false),
       ]);
 
       const mockOctokit = {
@@ -713,7 +717,7 @@ describe('claude-config', () => {
       vi.mocked(fs.existsSync).mockReturnValue(true);
       vi.mocked(fs.readFileSync).mockReturnValue('File content');
       vi.mocked(fs.readdirSync).mockReturnValue([
-        { name: 'file.md', isDirectory: () => false } as fs.Dirent,
+        createDirent('file.md', false),
       ]);
 
       const mockOctokit = {

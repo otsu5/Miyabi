@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import * as fs from 'fs';
-import { execSync } from 'child_process';
 
 // Mock all dependencies
 vi.mock('fs');
@@ -28,11 +27,11 @@ vi.mock('inquirer', () => ({
   },
 }));
 
-vi.mock('../../auth/github-oauth.js', () => ({
+vi.mock('../../auth/github-oauth', () => ({
   githubOAuth: vi.fn().mockResolvedValue('test_token'),
 }));
 
-vi.mock('../../setup/repository.js', () => ({
+vi.mock('../../setup/repository', () => ({
   createRepository: vi.fn().mockResolvedValue({
     owner: 'test-owner',
     repo: 'test-repo',
@@ -40,25 +39,26 @@ vi.mock('../../setup/repository.js', () => ({
   }),
 }));
 
-vi.mock('../../setup/labels.js', () => ({
+vi.mock('../../setup/labels', () => ({
   setupLabels: vi.fn().mockResolvedValue({ created: 53, updated: 0 }),
 }));
 
-vi.mock('../../setup/workflows.js', () => ({
+vi.mock('../../setup/workflows', () => ({
   deployWorkflows: vi.fn().mockResolvedValue(10),
 }));
 
-vi.mock('../../setup/projects.js', () => ({
-  setupProjects: vi.fn().mockResolvedValue({
-    projectUrl: 'https://github.com/users/test-owner/projects/1',
+vi.mock('../../setup/projects', () => ({
+  createProjectV2: vi.fn().mockResolvedValue({
+    url: 'https://github.com/users/test-owner/projects/1',
   }),
+  linkToProject: vi.fn(),
 }));
 
-vi.mock('../../setup/local.js', () => ({
+vi.mock('../../setup/local', () => ({
   cloneAndSetup: vi.fn().mockResolvedValue(undefined),
 }));
 
-vi.mock('../../setup/welcome.js', () => ({
+vi.mock('../../setup/welcome', () => ({
   showWelcome: vi.fn(),
 }));
 
@@ -69,18 +69,18 @@ describe('init command', () => {
 
   describe('init flow', () => {
     it('should execute full init flow', async () => {
-      const { githubOAuth } = await import('../../auth/github-oauth.js');
-      const { createRepository } = await import('../../setup/repository.js');
-      const { setupLabels } = await import('../../setup/labels.js');
-      const { deployWorkflows } = await import('../../setup/workflows.js');
-      const { setupProjects } = await import('../../setup/projects.js');
-      const { cloneAndSetup } = await import('../../setup/local.js');
+      const { githubOAuth } = await import('../../auth/github-oauth');
+      const { createRepository } = await import('../../setup/repository');
+      const { setupLabels } = await import('../../setup/labels');
+      const { deployWorkflows } = await import('../../setup/workflows');
+      const { createProjectV2 } = await import('../../setup/projects');
+      const { cloneAndSetup } = await import('../../setup/local');
 
       // Simulate init flow
       const token = await githubOAuth();
       expect(token).toBe('test_token');
 
-      const repoInfo = await createRepository('test-project', token, { private: false });
+      const repoInfo = await createRepository('test-project', token, false);
       expect(repoInfo.owner).toBe('test-owner');
       expect(repoInfo.repo).toBe('test-repo');
 
@@ -90,8 +90,8 @@ describe('init command', () => {
       const workflowCount = await deployWorkflows(repoInfo.owner, repoInfo.repo, token);
       expect(workflowCount).toBe(10);
 
-      const projectInfo = await setupProjects(repoInfo.owner, repoInfo.repo, token);
-      expect(projectInfo.projectUrl).toBeTruthy();
+      const projectInfo = await createProjectV2(repoInfo.owner, repoInfo.repo, token);
+      expect(projectInfo.url).toBeTruthy();
 
       await cloneAndSetup(repoInfo.url, 'test-project', { skipInstall: false });
 
@@ -99,22 +99,20 @@ describe('init command', () => {
       expect(createRepository).toHaveBeenCalledTimes(1);
       expect(setupLabels).toHaveBeenCalledTimes(1);
       expect(deployWorkflows).toHaveBeenCalledTimes(1);
-      expect(setupProjects).toHaveBeenCalledTimes(1);
+      expect(createProjectV2).toHaveBeenCalledTimes(1);
       expect(cloneAndSetup).toHaveBeenCalledTimes(1);
     });
 
     it('should handle private repository option', async () => {
-      const { createRepository } = await import('../../setup/repository.js');
+      const { createRepository } = await import('../../setup/repository');
 
-      await createRepository('test-project', 'test_token', { private: true });
+      await createRepository('test-project', 'test_token', true);
 
-      expect(createRepository).toHaveBeenCalledWith('test-project', 'test_token', {
-        private: true,
-      });
+      expect(createRepository).toHaveBeenCalledWith('test-project', 'test_token', true);
     });
 
     it('should handle skip-install option', async () => {
-      const { cloneAndSetup } = await import('../../setup/local.js');
+      const { cloneAndSetup } = await import('../../setup/local');
 
       await cloneAndSetup('https://github.com/test/repo', 'test-project', {
         skipInstall: true,
@@ -128,25 +126,25 @@ describe('init command', () => {
     });
 
     it('should handle authentication failure', async () => {
-      const { githubOAuth } = await import('../../auth/github-oauth.js');
+      const { githubOAuth } = await import('../../auth/github-oauth');
       vi.mocked(githubOAuth).mockRejectedValueOnce(new Error('Authentication failed'));
 
       await expect(githubOAuth()).rejects.toThrow('Authentication failed');
     });
 
     it('should handle repository creation failure', async () => {
-      const { createRepository } = await import('../../setup/repository.js');
+      const { createRepository } = await import('../../setup/repository');
       vi.mocked(createRepository).mockRejectedValueOnce(
         new Error('Repository already exists')
       );
 
-      await expect(
-        createRepository('existing-repo', 'test_token', { private: false })
-      ).rejects.toThrow('Repository already exists');
+      await expect(createRepository('existing-repo', 'test_token', false)).rejects.toThrow(
+        'Repository already exists'
+      );
     });
 
     it('should handle label setup failure', async () => {
-      const { setupLabels } = await import('../../setup/labels.js');
+      const { setupLabels } = await import('../../setup/labels');
       vi.mocked(setupLabels).mockRejectedValueOnce(new Error('Insufficient permissions'));
 
       await expect(setupLabels('owner', 'repo', 'test_token')).rejects.toThrow(
@@ -155,7 +153,7 @@ describe('init command', () => {
     });
 
     it('should handle workflow deployment failure', async () => {
-      const { deployWorkflows } = await import('../../setup/workflows.js');
+      const { deployWorkflows } = await import('../../setup/workflows');
       vi.mocked(deployWorkflows).mockRejectedValueOnce(new Error('API rate limit exceeded'));
 
       await expect(deployWorkflows('owner', 'repo', 'test_token')).rejects.toThrow(

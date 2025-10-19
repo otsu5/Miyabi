@@ -39,7 +39,8 @@ export interface Task {
   id: string;
   title: string;
   description: string;
-  type: 'feature' | 'bug' | 'refactor' | 'docs' | 'test' | 'deployment';
+  // Extended task categories include security/optimization for specialized agents
+  type: 'feature' | 'bug' | 'refactor' | 'docs' | 'test' | 'deployment' | 'security' | 'optimization';
   priority: number;
   severity?: Severity;
   impact?: ImpactLevel;
